@@ -6,7 +6,7 @@ services:
   # Note: network_mode host needed for SSDP/mDNS TV auto-discovery;
   #       under Colima, manual pairing via TV pairing code is recommended instead
   isponsorblock:
-    build: ./src/isponsorblock-fork
+    build: ./src/isponsorblock
     container_name: isponsorblock
     restart: unless-stopped
     volumes:
