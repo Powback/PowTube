@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# youtube-cli wrapper — uses the venv from the isponsorblock-fork
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "$SCRIPT_DIR/src/isponsorblock-fork/.venv/bin/python" \
+     "$SCRIPT_DIR/src/isponsorblock-fork/youtube_cli.py" "$@"
