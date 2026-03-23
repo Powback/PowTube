@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
-# youtube-cli wrapper — uses the venv from the isponsorblock-fork
+# youtube-cli wrapper — delegates TV commands to the iSponsorBlockTV control API
+# The container exposes port 7654; on Colima the host LAN IP is used instead of localhost
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Default to host LAN IP (Colima doesn't forward localhost -> container)
+# Override with: export ISPTV_API_URL=http://other-host:7654
+export ISPTV_API_URL="${ISPTV_API_URL:-http://192.168.50.100:7654}"
+
 exec "$SCRIPT_DIR/src/isponsorblock-fork/.venv/bin/python" \
      "$SCRIPT_DIR/src/isponsorblock-fork/youtube_cli.py" "$@"

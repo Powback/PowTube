@@ -6,10 +6,12 @@ services:
   # Note: network_mode host needed for SSDP/mDNS TV auto-discovery;
   #       under Colima, manual pairing via TV pairing code is recommended instead
   isponsorblock:
-    image: ghcr.io/dmunozv04/isponsorblocktv:latest
+    build: ./src/isponsorblock-fork
     container_name: isponsorblock
     restart: unless-stopped
     volumes:
       - ./data/isponsorblock:/app/data
+    ports:
+      - "7654:7654"
     environment:
       - TZ=Europe/Amsterdam
