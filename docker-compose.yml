@@ -1,0 +1,15 @@
+services:
+  # iSponsorBlockTV — auto-skips YouTube sponsor segments on smart TVs
+  # Connects to YouTube TV via Lounge API (pairing code on TV, NOT Jellyfin)
+  # First-time setup: docker exec -it isponsorblock python main.py --setup
+  # Or use the pairing helper: ../PowStation/scripts/isponsorblock-pair.sh <tv-pairing-code>
+  # Note: network_mode host needed for SSDP/mDNS TV auto-discovery;
+  #       under Colima, manual pairing via TV pairing code is recommended instead
+  isponsorblock:
+    image: ghcr.io/dmunozv04/isponsorblocktv:latest
+    container_name: isponsorblock
+    restart: unless-stopped
+    volumes:
+      - ./data/isponsorblock:/app/data
+    environment:
+      - TZ=Europe/Amsterdam
