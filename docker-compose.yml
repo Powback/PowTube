@@ -15,3 +15,18 @@ services:
       - "7654:7654"
     environment:
       - TZ=Europe/Amsterdam
+
+  # Chromecast control server — cast media to Chromecast/Google Cast devices
+  # Connects to TV directly by IP (no mDNS needed under Colima)
+  # Usage: ./chromecast-cli <command>   (from host, via port 7655)
+  chromecast:
+    build: ./src/chromecast
+    container_name: chromecast
+    restart: unless-stopped
+    ports:
+      - "7655:7655"
+    environment:
+      - TZ=Europe/Amsterdam
+      - CHROMECAST_HOST=192.168.50.143
+      - CHROMECAST_CONTROL_PORT=7655
+    # network_mode: host  # Uncomment if mDNS device discovery needed (not required for direct IP)

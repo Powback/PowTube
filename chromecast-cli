@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# chromecast-cli wrapper — delegates Chromecast commands to the control server (port 7655)
+#
+# URL resolution (in order):
+#   1. CHROMECAST_API_URL env var — explicit override
+#   2. Docker bridge gateway:7655 — detected dynamically (works from host and containers)
+#
+# Override: export CHROMECAST_API_URL=http://other-host:7655
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -z "${CHROMECAST_API_URL}" ]; then
+  if [ -f /.dockerenv ]; then
+    # Inside a container — get default gateway from kernel routing table
+    GATEWAY=$(awk 'NR>1 && $2=="00000000" {
+      h=$3; ip="";
+      for(i=7;i>=1;i-=2) ip=ip (length(ip)?".":"") int("0x" substr(h,i,2));
+      print ip; exit
+    }' /proc/net/route 2>/dev/null)
+  else
+    # On the host — ask Docker for the bridge gateway
+    GATEWAY=$(docker network inspect bridge \
+      --format '{{range .IPAM.Config}}{{.Gateway}}{{end}}' 2>/dev/null)
+  fi
+  CHROMECAST_API_URL="http://${GATEWAY:-172.17.0.1}:7655"
+fi
+export CHROMECAST_API_URL
+
+# Use the chromecast venv if available, else fall back to system python3
+VENV_PYTHON="$SCRIPT_DIR/src/chromecast/.venv/bin/python"
+if [ ! -x "$VENV_PYTHON" ]; then
+  VENV_PYTHON="python3"
+fi
+
+exec "$VENV_PYTHON" "$SCRIPT_DIR/src/chromecast/chromecast_cli.py" "$@"
